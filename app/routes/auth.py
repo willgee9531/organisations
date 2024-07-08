@@ -76,14 +76,14 @@ def login():
         if user is None:
             return jsonify({
                 "status": "Bad request",
-                "message": "User not found",
+                "message": "Authentication failed",
                 "statusCode": 401
             }), 401
         
         if not bcrypt.check_password_hash(user.password, data['password']):
             return jsonify({
                 "status": "Bad request",
-                "message": "Incorrect password",
+                "message": "Authentication failed",
                 "statusCode": 401
             }), 401
         

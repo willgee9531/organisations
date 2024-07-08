@@ -1,6 +1,6 @@
 # app/__init__.py
 from datetime import timedelta
-from flask import Flask
+from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from flask_bcrypt import Bcrypt
@@ -35,5 +35,15 @@ def create_app():
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(organisation_bp)
+
+    @app.route('/')
+    def home():
+        return jsonify({
+            "Data": {
+                "project": "HNG11 Stage 2 Task",
+                "developer": "Godwin Williams",
+                "description": "Authenticate user and then create organisations"
+            }
+        }), 200
 
     return app
