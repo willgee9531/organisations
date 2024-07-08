@@ -66,13 +66,27 @@ def register():
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
-    data = request.get_json()
-    errors = validate_login(data)
-    if errors:
-        return jsonify({"errors": errors}), 422
-
-    user = User.query.filter_by(email=data['email']).first()
-    if user and bcrypt.check_password_hash(user.password, data['password']):
+    try:
+        data = request.get_json()
+        errors = validate_login(data)
+        if errors:
+            return jsonify({"errors": errors}), 422
+        
+        user = User.query.filter_by(email=data['email']).first()
+        if user is None:
+            return jsonify({
+                "status": "Bad request",
+                "message": "User not found",
+                "statusCode": 401
+            }), 401
+        
+        if not bcrypt.check_password_hash(user.password, data['password']):
+            return jsonify({
+                "status": "Bad request",
+                "message": "Incorrect password",
+                "statusCode": 401
+            }), 401
+        
         access_token = create_access_token(identity=str(user.userId))
         return jsonify({
             "status": "success",
@@ -88,9 +102,10 @@ def login():
                 }
             }
         }), 200
-    else:
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
         return jsonify({
-            "status": "Bad request",
-            "message": "Authentication failed",
-            "statusCode": 401
-        }), 401
+            "status": "Error",
+            "message": "An unexpected error occurred",
+            "statusCode": 500
+        }), 500

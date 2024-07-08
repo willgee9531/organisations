@@ -19,6 +19,9 @@ class User(db.Model):
 
     organisations = db.relationship('Organisation', secondary=user_organisation, back_populates='users')
 
+    def __repr__(self):
+        return f"<User {self.userId}: {self.firstName} - {self.email}"
+    
 
 class Organisation(db.Model):
     __tablename__ = 'organisations'
@@ -28,3 +31,6 @@ class Organisation(db.Model):
     description = db.Column(db.String(255))
 
     users = db.relationship('User', secondary=user_organisation, back_populates='organisations')
+
+    def __repr__(self):
+        return f"<Organisation {self.orgId}: {self.name}"
